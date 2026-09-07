@@ -315,7 +315,18 @@ const CAT_COLOR = {"토지":"var(--c-land)","건물":"var(--c-bldg)","차량및�
 const rows = DATA.물건;
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const won = n => (n||0).toLocaleString("ko-KR");
-const eok = n => !n ? "—" : n >= 100000000 ? (n/100000000).toFixed(n >= 1e12 ? 0 : 1) + "억" : Math.round(n/10000).toLocaleString("ko-KR") + "만";
+/* 반올림이 단위 경계를 넘으면 위 단위로 올린다 (99,999,999 를 "10,000만"으로 쓰지 않는다) */
+function eok(n){
+  if (!n) return "—";
+  if (n >= 1e8) {
+    const v = +(n / 1e8).toFixed(1);
+    if (v >= 10000) return (n / 1e12).toFixed(1) + "조";
+    return v.toLocaleString("ko-KR") + "억";
+  }
+  const m = Math.round(n / 1e4);
+  if (m >= 10000) return (n / 1e8).toFixed(1) + "억";
+  return m.toLocaleString("ko-KR") + "만";
+}
 const ymd = s => s && s.length === 8 ? `${s.slice(4,6)}.${s.slice(6,8)}` : "—";
 
 /* 헤더 */
@@ -614,7 +625,7 @@ if (DATA.공유) {
     btn.disabled = true;
     btn.innerHTML = '<i class="spin"></i>수집 중';
     st.className = "status";
-    st.textContent = "법원 서버 조회 중… 조건에 따라 1분 이상 걸립니다";
+    st.textContent = "법원 서버 조회 중… 전국이면 12분 이상 걸립니다";
     try {
       const res = await fetch("/collect", {method:"POST"});
       const d = await res.json();
