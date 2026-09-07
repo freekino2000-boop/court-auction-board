@@ -314,6 +314,7 @@ td a:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 <script>
 (async () => {
 
+const PROXY_URL = "https://court-auction-detail.marsh-butterfly.workers.dev";
 const _r = await fetch('data.json?v=' + Date.now(), {cache: 'no-store'});
 if (!_r.ok) throw new Error('데이터를 불러오지 못했습니다 (' + _r.status + ')');
 const DATA = await _r.json();
