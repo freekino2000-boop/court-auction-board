@@ -59,7 +59,9 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);f
   background:transparent;color:var(--ink-2);border-radius:2px;cursor:pointer;
   transition:transform .12s var(--ease),background-color .12s var(--ease),color .12s var(--ease)}
 .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:baseline}
-.chip:hover{background:var(--paper-2);color:var(--ink)}
+@media (hover:hover) and (pointer:fine){
+  .chip:hover{background:var(--paper-2);color:var(--ink)}
+}
 .chip:active{transform:translateY(1px)}
 .chip:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
@@ -79,14 +81,15 @@ table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 thead th{font:600 11px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
   text-align:left;padding:0 var(--s3) var(--s2);border-bottom:1.5px solid var(--rule-strong);
   cursor:pointer;user-select:none;white-space:nowrap;transition:color .12s var(--ease)}
-thead th:hover{color:var(--ink)}
+@media (hover:hover) and (pointer:fine){
+  thead th:hover{color:var(--ink)}
+      }
 thead th:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
 thead th[data-dir]::after{content:"";display:inline-block;margin-left:5px;border:3px solid transparent}
 thead th[data-dir="asc"]::after{border-bottom-color:var(--seal);margin-bottom:3px}
 thead th[data-dir="desc"]::after{border-top-color:var(--seal);margin-top:3px}
 th.num,td.num{text-align:right}
 tbody tr{border-bottom:1px solid var(--rule);transition:background-color .1s var(--ease)}
-tbody tr:hover{background:var(--paper-2)}
 tbody td{padding:var(--s3);vertical-align:top}
 .cat{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--sans);white-space:nowrap}
 .cat i{width:8px;height:8px;border-radius:50%;flex:none}
@@ -103,7 +106,6 @@ tbody td{padding:var(--s3);vertical-align:top}
 .date{font-family:var(--mono);font-size:12px}
 .open{background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;text-align:left;
   border-bottom:1px solid var(--rule-strong)}
-.open:hover{color:var(--seal);border-bottom-color:var(--seal)}
 .open:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 td a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule-strong)}
 td a:hover{color:var(--seal);border-bottom-color:var(--seal)}
@@ -126,10 +128,14 @@ td a:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 .row-lab b{font-family:var(--mono);font-weight:600;font-size:12px;color:var(--ink)}
 .track{height:9px;background:#ece7da;border-radius:2px;overflow:hidden}
 .barfill{height:100%;border-radius:0 4px 4px 0;transform-origin:left center;
-  animation:grow .5s var(--ease) both}
+  animation:grow .26s var(--ease) both}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
+  /* 움직임만 걷어내고 색·투명도 전환은 남긴다 — 전부 끄면 상태 변화가 뚝 끊긴다 */
+  .barfill{animation:none}
+  .sheet .panelbox,.lb,.lb img{animation-name:fade;animation-duration:.12s}
+  .chip:active,.btn:active,.more button:active,.lb-nav:active{transform:none}
+  *{transition-property:opacity,background-color,color,border-color!important}
 }
 .sheet{position:fixed;inset:0;background:rgba(20,19,15,.55);display:none;z-index:50;
   align-items:stretch;justify-content:flex-end}
@@ -137,9 +143,11 @@ td a:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 .sheet .panelbox{width:720px;background:var(--paper);overflow-y:auto;padding:var(--s6) var(--s7) var(--s8);
   box-shadow:-2px 0 24px rgba(0,0,0,.18);animation:slidein .22s var(--ease) both}
 @keyframes slidein{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
-.sheet h3{font-family:var(--serif);font-weight:900;font-size:32px;letter-spacing:-.03em;margin:0 0 var(--s2)}
+.sheet-head{display:flex;align-items:flex-start;gap:var(--s4);margin:0 0 var(--s2)}
+.sheet h3{font-family:var(--serif);font-weight:900;font-size:32px;letter-spacing:-.03em;
+  margin:0;flex:1;min-width:0;text-wrap:balance;word-break:keep-all}
 .sheet .sub2{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-bottom:var(--s5)}
-.sheet-close{position:absolute;top:var(--s5);right:var(--s5);font:600 13px/1 var(--sans);
+.sheet-close{flex:none;align-self:flex-start;white-space:nowrap;font:600 13px/1 var(--sans);
   background:transparent;border:1px solid var(--rule-strong);border-radius:2px;padding:9px var(--s3);
   color:var(--ink-2);cursor:pointer;transition:background-color .12s var(--ease)}
 .sheet-close:hover{background:var(--paper-2);color:var(--ink)}
@@ -164,7 +172,6 @@ td a:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 .pics figure{margin:0}
 .pics img{width:100%;height:150px;object-fit:cover;border:1px solid var(--rule);border-radius:2px;
   display:block;cursor:zoom-in;transition:opacity .12s var(--ease)}
-.pics img:hover{opacity:.85}
 .pics figcaption{font-size:10.5px;color:var(--ink-3);margin-top:3px;font-family:var(--mono)}
 .lb{position:fixed;inset:0;background:rgba(12,11,9,.93);z-index:80;display:none;
   align-items:center;justify-content:center;animation:fade .16s var(--ease) both}
@@ -444,7 +451,7 @@ function bars(el, pairs, color){
     <div class="row-lab"><span>${esc(k)}</span><b>${won(v)}</b></div>
     <div class="track"><div class="barfill" style="width:${(v/max*100).toFixed(1)}%;
       background:${typeof color === "function" ? color(k) : color};
-      animation-delay:${i*40}ms"></div></div></div>`).join("");
+      animation-delay:${i*30}ms"></div></div></div>`).join("");
 }
 const tally = (arr, f) => Object.entries(arr.reduce((m,r) => (m[f(r)] = (m[f(r)]||0)+1, m), {}));
 bars(document.getElementById("dist-cat"),
@@ -491,8 +498,10 @@ const ITEM = {"00083001":"위치","00083003":"교통","00083006":"이용상태",
 function openSheet(r){
   sheet.setAttribute("open","");
   document.body.style.overflow = "hidden";
-  sheetbox.innerHTML = `<button class="sheet-close" type="button" id="x">닫기 ESC</button>
-    <h3>${esc(r.소재지)}</h3>
+  sheetbox.innerHTML = `<div class="sheet-head">
+      <h3>${esc(r.소재지)}</h3>
+      <button class="sheet-close" type="button" id="x">닫기</button>
+    </div>
     <div class="sub2">${esc(r.사건번호)} · 물건 ${esc(r.물건번호 || "1")} · ${esc(r.법원)} ${esc(r.담당계)}</div>
     <div class="loading">상세 조회 중…</div>`;
   document.getElementById("x").addEventListener("click", closeSheet);
@@ -517,8 +526,10 @@ function paintLocal(r){
     ["담당", `${r.법원} ${r.담당계}`],
     ["물건", r.상세],
   ].filter(([,v]) => v && String(v).trim());
-  sheetbox.innerHTML = `<button class="sheet-close" type="button" id="x">닫기 ESC</button>
-    <h3>${esc(r.소재지)}${r.건물명 ? " " + esc(r.건물명) : ""}</h3>
+  sheetbox.innerHTML = `<div class="sheet-head">
+      <h3>${esc(r.소재지)}${r.건물명 ? " " + esc(r.건물명) : ""}</h3>
+      <button class="sheet-close" type="button" id="x">닫기</button>
+    </div>
     <div class="sub2">${esc(r.사건번호)} · 물건 ${esc(r.물건번호||"1")}</div>
     <dl class="dl">${dl.map(([k,v]) => `<dt>${esc(k)}</dt><dd class="mono">${esc(v)}</dd>`).join("")}</dl>
     <p class="note">사진·기일내역·감정평가 요항은 법원 서버 조회가 필요합니다.
@@ -550,8 +561,10 @@ function paint(r, d){
   const pics = (d.사진||[]).map((p,i) =>
     `<figure><img src="${p.src}" alt="물건 사진 ${i+1}" loading="lazy"></figure>`).join("");
 
-  sheetbox.innerHTML = `<button class="sheet-close" type="button" id="x">닫기 ESC</button>
-    <h3>${esc(r.소재지)}${r.건물명 ? " " + esc(r.건물명) : ""}</h3>
+  sheetbox.innerHTML = `<div class="sheet-head">
+      <h3>${esc(r.소재지)}${r.건물명 ? " " + esc(r.건물명) : ""}</h3>
+      <button class="sheet-close" type="button" id="x">닫기</button>
+    </div>
     <div class="sub2">${esc(r.사건번호)} · 물건 ${esc(r.물건번호||"1")} · ${esc(b.cortOfcNm||r.법원)} ${esc(b.cortAuctnJdbnNm||"")}</div>
     <dl class="dl">${dl.map(([k,v]) => `<dt>${esc(k)}</dt><dd class="mono">${esc(v)}</dd>`).join("")}</dl>
     ${pics ? `<h4>사진</h4><div class="pics">${pics}</div>` : ""}
