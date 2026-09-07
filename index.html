@@ -495,6 +495,11 @@ const RESULT = {"001":"매각","002":"유찰","003":"최고가매각","004":"변
 const ITEM = {"00083001":"위치","00083003":"교통","00083006":"이용상태","00083015":"구조","00083002":"주변환경",
   "00083004":"형태·지세","00083005":"도로","00083007":"설비","00083008":"토지이용계획","00083009":"기타"};
 
+/* serve.py 로 열면 /detail, 공유본은 배포된 프록시. 둘 다 없으면 목록이 가진 값만 보여준다. */
+const DETAIL_URL = (typeof PROXY_URL !== "undefined" && PROXY_URL)
+  ? PROXY_URL
+  : (location.protocol.startsWith("http") && !DATA.공유 ? "/detail" : null);
+
 function openSheet(r){
   sheet.setAttribute("open","");
   document.body.style.overflow = "hidden";
@@ -505,16 +510,19 @@ function openSheet(r){
     <div class="sub2">${esc(r.사건번호)} · 물건 ${esc(r.물건번호 || "1")} · ${esc(r.법원)} ${esc(r.담당계)}</div>
     <div class="loading">상세 조회 중…</div>`;
   document.getElementById("x").addEventListener("click", closeSheet);
-  if (DATA.공유 || !location.protocol.startsWith("http")) {
-    paintLocal(r);          // 서버가 없으면 목록이 가진 값까지만 보여준다
+  if (!DETAIL_URL) {
+    paintLocal(r);          // 조회할 곳이 없으면 목록이 가진 값까지만 보여준다
     return;
   }
-  fetch("/detail", {method:"POST", headers:{"Content-Type":"application/json"},
+  fetch(DETAIL_URL, {method:"POST", headers:{"Content-Type":"application/json"},
     body: JSON.stringify({csNo:r.사건번호, cortOfcCd:r.법원코드, dspslGdsSeq:r.물건번호 || "1"})})
     .then(res => res.json())
     .then(d => { if(!d.ok) throw new Error(d.message||"조회 실패"); paint(r, d); })
-    .catch(e => { const el = sheetbox.querySelector(".loading");
-      if (el) { el.textContent = `상세를 불러오지 못했습니다 — ${e.message}`; el.style.color = "var(--seal)"; } });
+    .catch(e => {
+      paintLocal(r);
+      const n = sheetbox.querySelector(".note");
+      if (n) n.textContent = `상세를 불러오지 못했습니다 (${e.message}). 아래는 목록에 있는 정보입니다.`;
+    });
 }
 
 function paintLocal(r){
