@@ -18,7 +18,8 @@
   --accent:#1f4ed8; --accent-ink:#173db0; --accent-wash:#eef2ff;
   --warn:#b42318; --warn-wash:#fef3f2;
   /* 카테고리 (검증 통과 팔레트) */
-  --c-land:#2a78d6; --c-bldg:#eb6834; --c-car:#1baf7a; --c-etc:#8e8e99;
+  --c-home:#eb6834; --c-shop:#eda100; --c-fact:#4a3aa7;
+  --c-land:#2a78d6; --c-forest:#1baf7a; --c-car:#e34948; --c-etc:#8e8e99;
   /* 4px 그리드 */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
   --r:10px; --r-sm:7px;
@@ -345,7 +346,10 @@ const PROXY_URL = "https://court-auction-detail.freekino2000.workers.dev";
 const _r = await fetch('data.json?v=' + Date.now(), {cache: 'no-store'});
 if (!_r.ok) throw new Error('데이터를 불러오지 못했습니다 (' + _r.status + ')');
 const DATA = await _r.json();
-const CAT_COLOR = {"토지":"var(--c-land)","건물":"var(--c-bldg)","차량및운송장비":"var(--c-car)","기타":"var(--c-etc)"};
+/* 6분류. 색은 검증된 팔레트에서 뽑되, 건물 계열은 같은 계열로 묶어 한눈에 구분되게 한다 */
+const CAT_COLOR = {
+  "주거용건물":"var(--c-home)", "상가용건물":"var(--c-shop)", "산업용건물":"var(--c-fact)",
+  "토지":"var(--c-land)", "임야":"var(--c-forest)", "자동차":"var(--c-car)", "기타":"var(--c-etc)"};
 /* 물건 단위 묶기와 필드 정리는 dashboard.py 가 끝낸 상태로 들어온다. */
 const rows = DATA.물건;
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
