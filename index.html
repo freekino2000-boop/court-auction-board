@@ -135,7 +135,16 @@ tbody tr:last-child{border-bottom:0}
 /* ── 사이드: 분포 ──────────────────────────── */
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
   box-shadow:var(--shadow);padding:var(--s4) var(--s5) var(--s5);margin-bottom:var(--s4)}
-.panel h2{font-weight:500;font-size:13px;color:var(--ink-3);margin:0 0 var(--s4);letter-spacing:0}
+.panel h2{font-weight:500;font-size:13px;color:var(--ink-3);margin:0 0 var(--s4);letter-spacing:0;
+  display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2)}
+.panel h2 span{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.rows.folded > div:nth-child(n+9){display:none}
+.expand{margin-top:var(--s3);width:100%;font:500 12px/1 var(--sans);padding:9px;cursor:pointer;
+  background:transparent;border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink-2);
+  transition:border-color .16s var(--ease-out),color .16s var(--ease-out),transform .16s var(--ease-out)}
+.expand:hover{border-color:var(--ink-3);color:var(--ink)}
+.expand:active{transform:scale(.98)}
+.expand:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .rows{display:flex;flex-direction:column;gap:var(--s3)}
 .row-lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:5px}
 .row-lab span{color:var(--ink-2)}
@@ -310,7 +319,7 @@ tbody tr:last-child{border-bottom:0}
       <section class="panel"><h2>카테고리 분포</h2><div class="rows" id="dist-cat"></div></section>
       <section class="panel"><h2>지역 분포</h2><div class="rows" id="dist-sido"></div></section>
       <section class="panel"><h2>유찰 횟수</h2><div class="rows" id="dist-fail"></div></section>
-      <section class="panel"><h2>법원별 상위</h2><div class="rows" id="dist-court"></div></section>
+      <section class="panel"><h2>법원별</h2><div class="rows" id="dist-court"></div></section>
       <p class="note">데이터는 <code>courtauction.py</code> 실행 시점의 스냅샷입니다.
       갱신하려면 수집 후 <code>python3 dashboard.py</code> 를 실행하세요.</p>
     </aside>
@@ -473,15 +482,35 @@ function bars(el, pairs, color){
       animation-delay:${i*30}ms"></div></div></div>`).join("");
 }
 const tally = (arr, f) => Object.entries(arr.reduce((m,r) => (m[f(r)] = (m[f(r)]||0)+1, m), {}));
+
+/* 항목이 많으면 8개만 두고 접는다. 전체 개수를 제목에 적어 잘린 것을 숨기지 않는다. */
+function foldable(el, unit){
+  const n = el.children.length;
+  const h2 = el.closest(".panel").querySelector("h2");
+  h2.insertAdjacentHTML("beforeend", `<span>${won(n)}${unit}</span>`);
+  if (n <= 8) return;
+  el.classList.add("folded");
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "expand";
+  b.textContent = `전체 ${won(n)}${unit} 보기`;
+  b.addEventListener("click", () => {
+    const folded = el.classList.toggle("folded");
+    b.textContent = folded ? `전체 ${won(n)}${unit} 보기` : "접기";
+  });
+  el.after(b);
+}
 bars(document.getElementById("dist-cat"),
      tally(rows, r => r.카테고리).sort((a,b) => b[1]-a[1]), k => CAT_COLOR[k] || "var(--c-etc)");
 bars(document.getElementById("dist-sido"),
-     tally(rows, r => r.시도 || "미상").sort((a,b) => b[1]-a[1]).slice(0,10), "var(--ink-2)");
+     tally(rows, r => r.시도 || "미상").sort((a,b) => b[1]-a[1]), "var(--ink-2)");
+foldable(document.getElementById("dist-cat"), "종");
+foldable(document.getElementById("dist-sido"), "곳");
 bars(document.getElementById("dist-fail"),
      tally(rows, r => r.유찰 >= 6 ? "6회 이상" : `${r.유찰}회`)
        .sort((a,b) => a[0].localeCompare(b[0],"ko",{numeric:true})), "var(--ink-2)");
 bars(document.getElementById("dist-court"),
-     tally(rows, r => `${r.법원.replace("지방법원","지법")} ${r.담당계}`).sort((a,b) => b[1]-a[1]).slice(0,8), "var(--ink-2)");
+     tally(rows, r => r.법원.replace("지방법원","지법")).sort((a,b) => b[1]-a[1]), "var(--ink-2)");
+foldable(document.getElementById("dist-court"), "곳");
 
 /* 이벤트 */
 filters.addEventListener("click", e => {
