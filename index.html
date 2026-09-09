@@ -60,6 +60,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font
 
 /* ── 본문 비대칭 그리드 ─────────────────────── */
 .cols{display:grid;grid-template-columns:1fr 316px;gap:var(--s7);margin-top:var(--s6);align-items:start}
+@media (max-width:1200px){
+  /* 표가 눌리는 것보다 사이드를 내리는 편이 낫다 */
+  .cols{grid-template-columns:1fr;gap:var(--s5)}
+  aside{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:start}
+  aside .note{grid-column:1/-1}
+}
 
 /* 필터 바 — 한 줄 */
 .bar{display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap;margin-bottom:var(--s4)}
