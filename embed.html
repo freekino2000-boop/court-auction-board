@@ -249,9 +249,10 @@ tbody tr:last-child{border-bottom:0}
   .meta{text-align:left}
   .act{justify-content:flex-start;flex-wrap:wrap;margin-top:var(--s2)}
   .mast{padding-bottom:var(--s3)}
-  .kpis{grid-template-columns:1fr 1fr}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpi:nth-last-child(-n+2){grid-column:span 1}
   .kpi{padding:var(--s3) var(--s4)}
-  .kpi:last-child{grid-column:1/-1}
+  .kpi:nth-child(4){grid-column:span 2}
   .kpi dd{font-size:20px}
   .kpi.lead dd{font-size:24px}
   .cols{grid-template-columns:1fr;gap:var(--s5);margin-top:var(--s4)}
@@ -288,7 +289,8 @@ tbody tr:last-child{border-bottom:0}
 </style>
 <style>
   body{background:transparent}
-  .wrap{width:100%;max-width:none;margin:0;padding:0 var(--s3) var(--s6)}
+  .wrap{width:100%;max-width:none;margin:0;padding:0 2px var(--s5)}
+  .mast{padding-top:0}
   .mast{padding:0 0 var(--s4);grid-template-columns:1fr;gap:var(--s2)}
   .mast h1{display:none}
   .meta{text-align:left}
