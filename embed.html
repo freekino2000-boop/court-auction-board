@@ -429,7 +429,7 @@ const COLS = [
   {k:"유찰",     t:"유찰", n:1, w:"64px"},
   {k:"매각기일", t:"기일", n:1, w:"72px"},
 ];
-let sortKey = "매각기일", sortDir = "asc", shown = 40, view = [];
+let sortKey = "매각기일", sortDir = "asc", shown = 20, view = [];
 
 head.innerHTML = COLS.map(c =>
   `<th tabindex="0" role="button" class="${c.n?"num":""}" data-k="${c.k}" ${c.w?`style="width:${c.w}"`:""}>${c.t}</th>`).join("");
@@ -452,8 +452,8 @@ function fillSigu(){
     + (sd ? Object.entries(byRegion[sd]).sort((a,b) => b[1]-a[1]).map(([k,n]) => opt(k,k,n)).join("") : "");
 }
 fillSigu();
-sidoEl.addEventListener("change", () => { fillSigu(); shown = 40; render(); });
-siguEl.addEventListener("change", () => { shown = 40; render(); });
+sidoEl.addEventListener("change", () => { fillSigu(); shown = 20; render(); });
+siguEl.addEventListener("change", () => { shown = 20; render(); });
 
 function filtered(){
   const q = document.getElementById("q").value.trim().toLowerCase();
@@ -490,7 +490,7 @@ function render(){
     <td class="num date" data-l="기일">${ymd(r.매각기일)}</td></tr>`).join("")
     || `<tr><td colspan="7" class="empty">조건에 맞는 물건이 없습니다</td></tr>`;
   more.style.display = list.length > shown ? "" : "none";
-  more.textContent = `더 보기 (${won(Math.min(40, list.length - shown))}건)`;
+  more.textContent = `더 보기 (${won(Math.min(20, list.length - shown))}건)`;
 }
 
 /* 분포 — 단일 시리즈 막대, 값은 항상 직접 라벨 */
@@ -539,7 +539,7 @@ filters.addEventListener("click", e => {
   const k = b.dataset.cat, on = b.getAttribute("aria-pressed") === "true";
   on ? active.delete(k) : active.add(k);
   b.setAttribute("aria-pressed", String(!on));
-  shown = 40; render();
+  shown = 20; render();
 });
 head.addEventListener("click", e => sortBy(e.target.closest("th")));
 head.addEventListener("keydown", e => {
@@ -549,10 +549,10 @@ function sortBy(th){
   if (!th) return;
   const k = th.dataset.k;
   sortDir = (k === sortKey && sortDir === "asc") ? "desc" : "asc";
-  sortKey = k; shown = 40; render();
+  sortKey = k; shown = 20; render();
 }
-document.getElementById("q").addEventListener("input", () => { shown = 40; render(); });
-more.addEventListener("click", () => { shown += 40; render(); });
+document.getElementById("q").addEventListener("input", () => { shown = 20; render(); });
+more.addEventListener("click", () => { shown += 20; render(); });
 render();
 
 /* ── 물건 상세 ───────────────────────────────
